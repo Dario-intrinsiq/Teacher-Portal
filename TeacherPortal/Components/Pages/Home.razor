@@ -1,0 +1,230 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using TeacherPortal.Models
+@using TeacherPortal.Services
+@inject ClassService ClassService
+@inject AttendanceService AttendanceService
+@inject SchemeOfWorkService SchemeService
+
+<PageTitle>Dashboard - Teacher Portal</PageTitle>
+
+<div class="dashboard-container">
+    <div class="welcome-section">
+        <h1 class="dashboard-title">👨‍🏫 Welcome Back, Teacher!</h1>
+        <p class="dashboard-subtitle">@DateTime.Now.ToString("dddd, MMMM dd, yyyy")</p>
+    </div>
+
+    @if (nextSession != null && nextSessionClass != null)
+    {
+        <div class="next-session-card">
+            <div class="next-session-header">
+                <h2>🔔 Next Session</h2>
+                <span class="time-indicator">@GetTimeUntilSession()</span>
+            </div>
+            <div class="next-session-content">
+                <div class="session-main-info">
+                    <h3 class="session-class-name">@nextSessionClass.ClassName</h3>
+                    <p class="session-subject">@nextSessionClass.Subject</p>
+                    <div class="session-details-row">
+                        <span class="detail-badge">🕒 @nextSession.TimeSlot</span>
+                        <span class="detail-badge">🏫 @nextSessionClass.RoomNumber</span>
+                        <span class="detail-badge">👥 @AttendanceService.GetAllStudents().Count Students</span>
+                    </div>
+                </div>
+                <div class="session-actions">
+                    <a href="/attendance?sessionId=@nextSession.Id" class="btn btn-primary btn-lg">
+                        📋 Take Attendance
+                    </a>
+                    <a href="/scheme-of-work" class="btn btn-secondary btn-lg">
+                        📝 Scheme of Work
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="no-session-card">
+            <div class="no-session-icon">✨</div>
+            <h3>No More Sessions Today</h3>
+            <p>You've completed all your sessions for today. Great job!</p>
+        </div>
+    }
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card stats-card">
+            <div class="card-header">
+                <h3>📊 Today's Overview</h3>
+            </div>
+            <div class="card-body">
+                <div class="stat-row">
+                    <span class="stat-label">Total Sessions Today:</span>
+                    <span class="stat-value">@todaySessions.Count</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Completed:</span>
+                    <span class="stat-value stat-completed">@completedSessions</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Remaining:</span>
+                    <span class="stat-value stat-remaining">@(todaySessions.Count - completedSessions)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card sessions-card">
+            <div class="card-header">
+                <h3>📅 Today's Schedule</h3>
+            </div>
+            <div class="card-body">
+                @if (todaySessions.Any())
+                {
+                    <div class="sessions-timeline">
+                        @foreach (var session in todaySessions)
+                        {
+                            var cls = ClassService.GetClassById(session.ClassId);
+                            var isPast = IsSessionPast(session);
+                            <div class="timeline-item @(isPast ? "past" : "") @(session.Id == nextSession?.Id ? "current" : "")">
+                                <div class="timeline-time">@session.TimeSlot.Split('-')[0].Trim()</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">@cls?.ClassName</div>
+                                    <div class="timeline-room">@cls?.RoomNumber</div>
+                                </div>
+                                @if (session.Id == nextSession?.Id)
+                                {
+                                    <span class="timeline-badge">Next</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="no-data">No sessions scheduled for today</p>
+                }
+            </div>
+        </div>
+
+        <div class="dashboard-card quick-actions-card">
+            <div class="card-header">
+                <h3>⚡ Quick Actions</h3>
+            </div>
+            <div class="card-body">
+                <div class="action-buttons">
+                    <a href="/classes" class="action-btn">
+                        <span class="action-icon">📚</span>
+                        <span class="action-text">View All Classes</span>
+                    </a>
+                    <a href="/attendance" class="action-btn">
+                        <span class="action-icon">✓</span>
+                        <span class="action-text">Take Attendance</span>
+                    </a>
+                    <a href="/scheme-of-work" class="action-btn">
+                        <span class="action-icon">📝</span>
+                        <span class="action-text">Scheme of Work</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card recent-card">
+            <div class="card-header">
+                <h3>📖 Recent Schemes</h3>
+            </div>
+            <div class="card-body">
+                @if (recentSchemes.Any())
+                {
+                    <div class="recent-list">
+                        @foreach (var scheme in recentSchemes.Take(3))
+                        {
+                            var session = ClassService.GetSessionById(scheme.SessionId);
+                            var cls = session != null ? ClassService.GetClassById(session.ClassId) : null;
+                            <div class="recent-item">
+                                <div class="recent-date">@scheme.Date.ToString("MMM dd")</div>
+                                <div class="recent-content">
+                                    <div class="recent-title">@scheme.Topic</div>
+                                    <div class="recent-meta">@cls?.ClassName - @session?.SessionName</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <a href="/scheme-of-work" class="view-all-link">View All →</a>
+                }
+                else
+                {
+                    <p class="no-data">No recent schemes of work</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Session> todaySessions = new();
+    private Session? nextSession = null;
+    private Class? nextSessionClass = null;
+    private int completedSessions = 0;
+    private List<SchemeOfWork> recentSchemes = new();
+
+    protected override void OnInitialized()
+    {
+        LoadDashboardData();
+    }
+
+    private void LoadDashboardData()
+    {
+        var today = DateTime.Now.DayOfWeek;
+        var currentTime = DateTime.Now.TimeOfDay;
+
+        // Get today's sessions
+        todaySessions = ClassService.GetSessionsByDay(today)
+            .OrderBy(s => TimeSpan.Parse(s.TimeSlot.Split('-')[0].Trim()))
+            .ToList();
+
+        // Find next session
+        foreach (var session in todaySessions)
+        {
+            var sessionStartTime = TimeSpan.Parse(session.TimeSlot.Split('-')[0].Trim());
+            if (sessionStartTime > currentTime)
+            {
+                nextSession = session;
+                nextSessionClass = ClassService.GetClassById(session.ClassId);
+                break;
+            }
+        }
+
+        // Count completed sessions (those in the past)
+        completedSessions = todaySessions.Count(s => IsSessionPast(s));
+
+        // Get recent schemes
+        recentSchemes = SchemeService.GetAllSchemes().Take(5).ToList();
+    }
+
+    private bool IsSessionPast(Session session)
+    {
+        var sessionEndTime = TimeSpan.Parse(session.TimeSlot.Split('-')[1].Trim());
+        return DateTime.Now.TimeOfDay > sessionEndTime;
+    }
+
+    private string GetTimeUntilSession()
+    {
+        if (nextSession == null) return "";
+
+        var sessionStartTime = TimeSpan.Parse(nextSession.TimeSlot.Split('-')[0].Trim());
+        var currentTime = DateTime.Now.TimeOfDay;
+        var diff = sessionStartTime - currentTime;
+
+        if (diff.TotalMinutes < 60)
+        {
+            return $"Starting in {(int)diff.TotalMinutes} minutes";
+        }
+        else if (diff.TotalHours < 2)
+        {
+            return $"Starting in {(int)diff.TotalHours} hour {(int)diff.Minutes} minutes";
+        }
+        else
+        {
+            return $"Starting in {(int)diff.TotalHours} hours";
+        }
+    }
+}

@@ -1,0 +1,282 @@
+@page "/scheme-of-work"
+@rendermode InteractiveServer
+@using TeacherPortal.Models
+@using TeacherPortal.Services
+@inject SchemeOfWorkService SchemeService
+@inject ClassService ClassService
+
+<PageTitle>Scheme of Work</PageTitle>
+
+<div class="scheme-container">
+    <div class="header-section">
+        <h1 class="page-title">📝 Scheme of Work</h1>
+        <button class="btn btn-primary" @onclick="ShowAddForm">
+            ➕ Add New Entry
+        </button>
+    </div>
+
+    <div class="filter-section">
+        <div class="filter-group">
+            <label>Filter by Session:</label>
+            <select class="form-select" @bind="selectedSessionId" @bind:after="FilterSchemes">
+                <option value="0">All Sessions</option>
+                @foreach (var cls in allClasses)
+                {
+                    @foreach (var session in cls.Sessions)
+                    {
+                        <option value="@session.Id">@cls.ClassName - @session.SessionName (@session.TimeSlot)</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Filter by Date:</label>
+            <input type="date" class="form-control" @bind="filterDate" @bind:after="FilterSchemes" />
+            <button class="btn btn-secondary btn-sm" @onclick="ClearDateFilter">Clear</button>
+        </div>
+    </div>
+
+    @if (showForm)
+    {
+        <div class="scheme-form-card">
+            <div class="form-header">
+                <h3>@(editingScheme?.Id > 0 ? "Edit" : "Add New") Scheme of Work</h3>
+                <button class="btn btn-link" @onclick="CancelForm">✕</button>
+            </div>
+            <div class="form-body">
+                <div class="form-group">
+                    <label>Session <span class="required">*</span></label>
+                    <select class="form-select" @bind="formScheme.SessionId">
+                        <option value="0">-- Select a Session --</option>
+                        @foreach (var cls in allClasses)
+                        {
+                            @foreach (var session in cls.Sessions)
+                            {
+                                <option value="@session.Id">@cls.ClassName - @session.SessionName (@session.TimeSlot)</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date <span class="required">*</span></label>
+                    <input type="date" class="form-control" @bind="formScheme.Date" />
+                </div>
+                <div class="form-group">
+                    <label>Topic <span class="required">*</span></label>
+                    <input type="text" class="form-control" @bind="formScheme.Topic" placeholder="e.g., Past Simple Tense" />
+                </div>
+                <div class="form-group">
+                    <label>Description <span class="required">*</span></label>
+                    <textarea class="form-control" rows="4" @bind="formScheme.Description" 
+                              placeholder="Describe what was covered in the lesson..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Materials Used</label>
+                    <textarea class="form-control" rows="2" @bind="formScheme.Materials" 
+                              placeholder="Textbooks, handouts, online resources..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Homework Assigned</label>
+                    <textarea class="form-control" rows="2" @bind="formScheme.Homework" 
+                              placeholder="Homework or follow-up activities..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" @onclick="SaveScheme">💾 Save</button>
+                    <button class="btn btn-secondary" @onclick="CancelForm">Cancel</button>
+                </div>
+                @if (!string.IsNullOrEmpty(formError))
+                {
+                    <div class="alert alert-danger mt-3">@formError</div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="schemes-list">
+        @if (displayedSchemes.Any())
+        {
+            @foreach (var scheme in displayedSchemes)
+            {
+                <div class="scheme-card">
+                    <div class="scheme-header">
+                        <div class="scheme-title-section">
+                            <h3 class="scheme-topic">@scheme.Topic</h3>
+                            <div class="scheme-meta">
+                                <span class="class-badge">@GetSessionDisplay(scheme.SessionId)</span>
+                                <span class="date-badge">📅 @scheme.Date.ToString("MMM dd, yyyy")</span>
+                            </div>
+                        </div>
+                        <div class="scheme-actions">
+                            <button class="btn-icon" @onclick="() => EditScheme(scheme)" title="Edit">✏️</button>
+                            <button class="btn-icon" @onclick="() => DeleteScheme(scheme.Id)" title="Delete">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="scheme-body">
+                        <div class="scheme-section">
+                            <h4>Description</h4>
+                            <p>@scheme.Description</p>
+                        </div>
+                        @if (!string.IsNullOrEmpty(scheme.Materials))
+                        {
+                            <div class="scheme-section">
+                                <h4>📚 Materials Used</h4>
+                                <p>@scheme.Materials</p>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(scheme.Homework))
+                        {
+                            <div class="scheme-section">
+                                <h4>📖 Homework</h4>
+                                <p>@scheme.Homework</p>
+                            </div>
+                        }
+                    </div>
+                    <div class="scheme-footer">
+                        <small class="text-muted">
+                            Created: @scheme.CreatedAt.ToString("MMM dd, yyyy HH:mm")
+                            @if (scheme.UpdatedAt.HasValue)
+                            {
+                                <span> | Updated: @scheme.UpdatedAt.Value.ToString("MMM dd, yyyy HH:mm")</span>
+                            }
+                        </small>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>No schemes of work found</h3>
+                <p>@(selectedSessionId > 0 || filterDate.HasValue ? "Try adjusting your filters or add a new entry." : "Start by adding your first scheme of work entry.")</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Class> allClasses = new();
+    private List<SchemeOfWork> allSchemes = new();
+    private List<SchemeOfWork> displayedSchemes = new();
+    
+    private int selectedSessionId = 0;
+    private DateTime? filterDate = null;
+    
+    private bool showForm = false;
+    private SchemeOfWork formScheme = new();
+    private SchemeOfWork? editingScheme = null;
+    private string formError = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        allClasses = ClassService.GetAllClasses();
+        allSchemes = SchemeService.GetAllSchemes();
+        displayedSchemes = allSchemes;
+    }
+
+    private void FilterSchemes()
+    {
+        displayedSchemes = allSchemes;
+
+        if (selectedSessionId > 0)
+        {
+            displayedSchemes = displayedSchemes.Where(s => s.SessionId == selectedSessionId).ToList();
+        }
+
+        if (filterDate.HasValue)
+        {
+            displayedSchemes = displayedSchemes.Where(s => s.Date.Date == filterDate.Value.Date).ToList();
+        }
+    }
+
+    private string GetSessionDisplay(int sessionId)
+    {
+        var session = ClassService.GetSessionById(sessionId);
+        if (session != null)
+        {
+            var cls = ClassService.GetClassById(session.ClassId);
+            return $"{cls?.ClassName} - {session.SessionName}";
+        }
+        return "Unknown";
+    }
+
+    private void ClearDateFilter()
+    {
+        filterDate = null;
+        FilterSchemes();
+    }
+
+    private void ShowAddForm()
+    {
+        formScheme = new SchemeOfWork { Date = DateTime.Today };
+        editingScheme = null;
+        showForm = true;
+        formError = string.Empty;
+    }
+
+    private void EditScheme(SchemeOfWork scheme)
+    {
+        editingScheme = scheme;
+        formScheme = new SchemeOfWork
+        {
+            Id = scheme.Id,
+            SessionId = scheme.SessionId,
+            Date = scheme.Date,
+            Topic = scheme.Topic,
+            Description = scheme.Description,
+            Materials = scheme.Materials,
+            Homework = scheme.Homework
+        };
+        showForm = true;
+        formError = string.Empty;
+    }
+
+    private void SaveScheme()
+    {
+        formError = string.Empty;
+
+        if (formScheme.SessionId == 0)
+        {
+            formError = "Please select a session.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(formScheme.Topic))
+        {
+            formError = "Please enter a topic.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(formScheme.Description))
+        {
+            formError = "Please enter a description.";
+            return;
+        }
+
+        SchemeService.AddOrUpdateScheme(formScheme);
+        LoadData();
+        FilterSchemes();
+        CancelForm();
+    }
+
+    private void DeleteScheme(int id)
+    {
+        SchemeService.DeleteScheme(id);
+        LoadData();
+        FilterSchemes();
+    }
+
+    private void CancelForm()
+    {
+        showForm = false;
+        formScheme = new();
+        editingScheme = null;
+        formError = string.Empty;
+    }
+}
+

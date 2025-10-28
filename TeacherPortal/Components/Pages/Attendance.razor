@@ -1,0 +1,256 @@
+@page "/attendance"
+@rendermode InteractiveServer
+@using TeacherPortal.Models
+@using TeacherPortal.Services
+@using Microsoft.AspNetCore.WebUtilities
+@inject AttendanceService AttendanceService
+@inject ClassService ClassService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Take Attendance</PageTitle>
+
+<div class="attendance-container">
+    <div class="header-section">
+        <h1 class="page-title">📋 Class Attendance</h1>
+        <div class="date-selector">
+            <label for="attendance-date">Date:</label>
+            <input type="date" 
+                   id="attendance-date" 
+                   class="form-control" 
+                   @bind="selectedDate" 
+                   @bind:after="LoadAttendance" />
+        </div>
+    </div>
+
+    @if (selectedSession == null)
+    {
+        <div class="session-selector-card">
+            <h3>Select a Session</h3>
+            <p>Please select a class session to take attendance:</p>
+            
+            <div class="sessions-selection-grid">
+                @foreach (var cls in allClasses)
+                {
+                    @foreach (var session in cls.Sessions)
+                    {
+                        <div class="session-selection-item" @onclick="() => SelectSession(session.Id)">
+                            <div class="session-sel-header">
+                                <span class="session-sel-class">@cls.ClassName</span>
+                                <span class="session-sel-room">@cls.RoomNumber</span>
+                            </div>
+                            <div class="session-sel-name">@session.SessionName</div>
+                            <div class="session-sel-time">🕒 @session.TimeSlot</div>
+                            <div class="session-sel-days">📅 @session.DaysDisplay</div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="session-info-card">
+            <div class="session-info-content">
+                <h3>@selectedClass?.ClassName - @selectedSession.SessionName</h3>
+                <div class="session-details-inline">
+                    <span>🏫 @selectedClass?.RoomNumber</span>
+                    <span>🕒 @selectedSession.TimeSlot</span>
+                    <span>📅 @selectedSession.DaysDisplay</span>
+                </div>
+            </div>
+            <button class="btn btn-secondary" @onclick="ClearSession">Change Session</button>
+        </div>
+
+        <div class="stats-cards">
+            <div class="stat-card stat-total">
+                <div class="stat-value">@attendanceRecords.Count</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+            <div class="stat-card stat-present">
+                <div class="stat-value">@attendanceRecords.Count(r => r.Status == AttendanceStatus.Present)</div>
+                <div class="stat-label">Present</div>
+            </div>
+            <div class="stat-card stat-absent">
+                <div class="stat-value">@attendanceRecords.Count(r => r.Status == AttendanceStatus.Absent)</div>
+                <div class="stat-label">Absent</div>
+            </div>
+            <div class="stat-card stat-late">
+                <div class="stat-value">@attendanceRecords.Count(r => r.Status == AttendanceStatus.Late)</div>
+                <div class="stat-label">Late</div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="btn btn-success" @onclick="MarkAllPresent">✓ Mark All Present</button>
+            <button class="btn btn-secondary" @onclick="ClearAll">↺ Clear All</button>
+        </div>
+
+        <div class="attendance-table">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var record in attendanceRecords)
+                    {
+                        <tr class="student-row @GetStatusClass(record.Status)">
+                            <td class="student-name">
+                                <div class="student-avatar">@GetInitials(record.Student?.FullName ?? "")</div>
+                                <span>@record.Student?.FullName</span>
+                            </td>
+                            <td class="student-email">@record.Student?.Email</td>
+                            <td class="status-cell">
+                                <div class="status-buttons">
+                                    <button class="status-btn status-present @(record.Status == AttendanceStatus.Present ? "active" : "")" 
+                                            @onclick="() => UpdateStatus(record.StudentId, AttendanceStatus.Present)"
+                                            title="Present">
+                                        ✓
+                                    </button>
+                                    <button class="status-btn status-absent @(record.Status == AttendanceStatus.Absent ? "active" : "")" 
+                                            @onclick="() => UpdateStatus(record.StudentId, AttendanceStatus.Absent)"
+                                            title="Absent">
+                                        ✗
+                                    </button>
+                                    <button class="status-btn status-late @(record.Status == AttendanceStatus.Late ? "active" : "")" 
+                                            @onclick="() => UpdateStatus(record.StudentId, AttendanceStatus.Late)"
+                                            title="Late">
+                                        ⏱
+                                    </button>
+                                    <button class="status-btn status-excused @(record.Status == AttendanceStatus.Excused ? "active" : "")" 
+                                            @onclick="() => UpdateStatus(record.StudentId, AttendanceStatus.Excused)"
+                                            title="Excused">
+                                        E
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="notes-cell">
+                                <input type="text" 
+                                       class="form-control notes-input" 
+                                       placeholder="Add notes..."
+                                       @bind="record.Notes"
+                                       @bind:event="oninput" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (attendanceRecords.Count == 0)
+        {
+            <div class="empty-state">
+                <p>No students found in the class.</p>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private DateTime selectedDate = DateTime.Today;
+    private List<AttendanceRecord> attendanceRecords = new();
+    private int? selectedSessionId = null;
+    private Session? selectedSession = null;
+    private Class? selectedClass = null;
+    private List<Class> allClasses = new();
+
+    protected override void OnInitialized()
+    {
+        allClasses = ClassService.GetAllClasses();
+        
+        // Try to get sessionId from query string
+        var uri = new Uri(NavigationManager.Uri);
+        var queryParams = QueryHelpers.ParseQuery(uri.Query);
+        if (queryParams.TryGetValue("sessionId", out var sessionIdString) && int.TryParse(sessionIdString, out var sessionId))
+        {
+            SelectSession(sessionId);
+        }
+    }
+
+    private void SelectSession(int sessionId)
+    {
+        selectedSessionId = sessionId;
+        selectedSession = ClassService.GetSessionById(sessionId);
+        if (selectedSession != null)
+        {
+            selectedClass = ClassService.GetClassById(selectedSession.ClassId);
+            LoadAttendance();
+        }
+    }
+
+    private void ClearSession()
+    {
+        selectedSessionId = null;
+        selectedSession = null;
+        selectedClass = null;
+        attendanceRecords = new();
+    }
+
+    private void LoadAttendance()
+    {
+        if (selectedSessionId.HasValue)
+        {
+            attendanceRecords = AttendanceService.GetAttendanceForDateAndSession(selectedDate, selectedSessionId.Value);
+        }
+    }
+
+    private void UpdateStatus(int studentId, AttendanceStatus status)
+    {
+        if (selectedSessionId.HasValue)
+        {
+            AttendanceService.UpdateAttendance(studentId, selectedDate, selectedSessionId.Value, status);
+            LoadAttendance();
+        }
+    }
+
+    private void MarkAllPresent()
+    {
+        if (selectedSessionId.HasValue)
+        {
+            foreach (var record in attendanceRecords)
+            {
+                AttendanceService.UpdateAttendance(record.StudentId, selectedDate, selectedSessionId.Value, AttendanceStatus.Present);
+            }
+            LoadAttendance();
+        }
+    }
+
+    private void ClearAll()
+    {
+        if (selectedSessionId.HasValue)
+        {
+            foreach (var record in attendanceRecords)
+            {
+                AttendanceService.UpdateAttendance(record.StudentId, selectedDate, selectedSessionId.Value, AttendanceStatus.NotMarked);
+            }
+            LoadAttendance();
+        }
+    }
+
+    private string GetStatusClass(AttendanceStatus status)
+    {
+        return status switch
+        {
+            AttendanceStatus.Present => "status-present-row",
+            AttendanceStatus.Absent => "status-absent-row",
+            AttendanceStatus.Late => "status-late-row",
+            AttendanceStatus.Excused => "status-excused-row",
+            _ => ""
+        };
+    }
+
+    private string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+            return "?";
+
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+            return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+        return parts[0][0].ToString().ToUpper();
+    }
+}

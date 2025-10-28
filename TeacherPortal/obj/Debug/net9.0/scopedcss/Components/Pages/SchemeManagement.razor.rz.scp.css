@@ -1,0 +1,314 @@
+.scheme-container[b-2uit8r5slp] {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.header-section[b-2uit8r5slp] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.page-title[b-2uit8r5slp] {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.filter-section[b-2uit8r5slp] {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+}
+
+.filter-group[b-2uit8r5slp] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 250px;
+}
+
+.filter-group label[b-2uit8r5slp] {
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap;
+}
+
+.scheme-form-card[b-2uit8r5slp] {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    border-left: 4px solid #007bff;
+}
+
+.form-header[b-2uit8r5slp] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.form-header h3[b-2uit8r5slp] {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.form-header .btn-link[b-2uit8r5slp] {
+    color: white;
+    font-size: 1.5rem;
+    text-decoration: none;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.form-body[b-2uit8r5slp] {
+    padding: 2rem;
+}
+
+.form-group[b-2uit8r5slp] {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label[b-2uit8r5slp] {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.required[b-2uit8r5slp] {
+    color: #dc3545;
+}
+
+.form-control[b-2uit8r5slp], .form-select[b-2uit8r5slp] {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem 0.75rem;
+}
+
+.form-control:focus[b-2uit8r5slp], .form-select:focus[b-2uit8r5slp] {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+textarea.form-control[b-2uit8r5slp] {
+    resize: vertical;
+}
+
+.form-actions[b-2uit8r5slp] {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.schemes-list[b-2uit8r5slp] {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.scheme-card[b-2uit8r5slp] {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border-left: 4px solid #28a745;
+    overflow: hidden;
+}
+
+.scheme-card:hover[b-2uit8r5slp] {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.scheme-header[b-2uit8r5slp] {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.scheme-title-section[b-2uit8r5slp] {
+    flex: 1;
+}
+
+.scheme-topic[b-2uit8r5slp] {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0 0 0.5rem 0;
+}
+
+.scheme-meta[b-2uit8r5slp] {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.class-badge[b-2uit8r5slp] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.date-badge[b-2uit8r5slp] {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.scheme-actions[b-2uit8r5slp] {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon[b-2uit8r5slp] {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover[b-2uit8r5slp] {
+    background: rgba(0, 0, 0, 0.05);
+    transform: scale(1.1);
+}
+
+.scheme-body[b-2uit8r5slp] {
+    padding: 1.5rem;
+}
+
+.scheme-section[b-2uit8r5slp] {
+    margin-bottom: 1.5rem;
+}
+
+.scheme-section:last-child[b-2uit8r5slp] {
+    margin-bottom: 0;
+}
+
+.scheme-section h4[b-2uit8r5slp] {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.scheme-section p[b-2uit8r5slp] {
+    color: #6c757d;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.scheme-footer[b-2uit8r5slp] {
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.text-muted[b-2uit8r5slp] {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.empty-state[b-2uit8r5slp] {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon[b-2uit8r5slp] {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3[b-2uit8r5slp] {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p[b-2uit8r5slp] {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+.alert[b-2uit8r5slp] {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin: 0;
+}
+
+.alert-danger[b-2uit8r5slp] {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+@media (max-width: 768px) {
+    .header-section[b-2uit8r5slp] {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-title[b-2uit8r5slp] {
+        font-size: 2rem;
+    }
+
+    .filter-section[b-2uit8r5slp] {
+        flex-direction: column;
+    }
+
+    .filter-group[b-2uit8r5slp] {
+        width: 100%;
+    }
+
+    .scheme-header[b-2uit8r5slp] {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .scheme-actions[b-2uit8r5slp] {
+        align-self: flex-end;
+    }
+
+    .form-actions[b-2uit8r5slp] {
+        flex-direction: column;
+    }
+
+    .form-actions button[b-2uit8r5slp] {
+        width: 100%;
+    }
+}
+

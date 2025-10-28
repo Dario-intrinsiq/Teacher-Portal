@@ -1,0 +1,390 @@
+.attendance-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.date-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.date-selector label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.date-selector input {
+    max-width: 200px;
+}
+
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-total .stat-value {
+    color: #007bff;
+}
+
+.stat-present .stat-value {
+    color: #28a745;
+}
+
+.stat-absent .stat-value {
+    color: #dc3545;
+}
+
+.stat-late .stat-value {
+    color: #ffc107;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.quick-actions button {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.attendance-table {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.table {
+    margin: 0;
+}
+
+.table thead th {
+    background: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.student-row {
+    transition: background-color 0.2s;
+}
+
+.student-row:hover {
+    background-color: #f8f9fa;
+}
+
+.student-row td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.student-name {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 600;
+}
+
+.student-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.student-email {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.status-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.status-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-btn:hover {
+    transform: scale(1.1);
+}
+
+.status-btn.status-present {
+    color: #28a745;
+}
+
+.status-btn.status-present:hover,
+.status-btn.status-present.active {
+    background: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.status-btn.status-absent {
+    color: #dc3545;
+}
+
+.status-btn.status-absent:hover,
+.status-btn.status-absent.active {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.status-btn.status-late {
+    color: #ffc107;
+}
+
+.status-btn.status-late:hover,
+.status-btn.status-late.active {
+    background: #ffc107;
+    border-color: #ffc107;
+    color: white;
+}
+
+.status-btn.status-excused {
+    color: #17a2b8;
+}
+
+.status-btn.status-excused:hover,
+.status-btn.status-excused.active {
+    background: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+}
+
+.notes-input {
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.status-present-row {
+    background-color: rgba(40, 167, 69, 0.05);
+}
+
+.status-absent-row {
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+.status-late-row {
+    background-color: rgba(255, 193, 7, 0.05);
+}
+
+.status-excused-row {
+    background-color: rgba(23, 162, 184, 0.05);
+}
+
+.session-selector-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.session-selector-card h3 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.session-selector-card p {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+}
+
+.sessions-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.session-selection-item {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.session-selection-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+}
+
+.session-sel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.session-sel-class {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.session-sel-room {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.session-sel-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.session-sel-time,
+.session-sel-days {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 0.25rem;
+}
+
+.session-info-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.session-info-content h3 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.5rem;
+}
+
+.session-details-inline {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.session-details-inline span {
+    font-size: 0.95rem;
+    opacity: 0.95;
+}
+
+.session-info-card .btn {
+    white-space: nowrap;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .stats-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .student-name {
+        font-size: 0.9rem;
+    }
+
+    .student-avatar {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
+
+    .status-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+}
+
