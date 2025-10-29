@@ -1,33 +1,36 @@
 .dashboard-container[b-5vobpl2lo2] {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2.5rem 2rem;
 }
 
 .welcome-section[b-5vobpl2lo2] {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .dashboard-title[b-5vobpl2lo2] {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #2c3e50;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1d1d1f;
     margin: 0 0 0.5rem 0;
+    letter-spacing: -0.04em;
 }
 
 .dashboard-subtitle[b-5vobpl2lo2] {
-    font-size: 1.1rem;
-    color: #6c757d;
+    font-size: 1.1875rem;
+    color: #86868b;
     margin: 0;
+    font-weight: 400;
 }
 
 .next-session-card[b-5vobpl2lo2] {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
     color: white;
-    border-radius: 16px;
-    padding: 2rem;
+    border-radius: 20px;
+    padding: 2.5rem;
     margin-bottom: 2rem;
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 113, 227, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
 }
 
 .next-session-header[b-5vobpl2lo2] {
@@ -138,10 +141,11 @@
 
 .dashboard-card[b-5vobpl2lo2] {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 0.5px solid rgba(0, 0, 0, 0.04);
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dashboard-card:hover[b-5vobpl2lo2] {
@@ -213,8 +217,8 @@
 }
 
 .timeline-item.current[b-5vobpl2lo2] {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-    border: 2px solid #667eea;
+    background: linear-gradient(135deg, rgba(0, 113, 227, 0.08) 0%, rgba(0, 119, 237, 0.08) 100%);
+    border: 2px solid #0071e3;
 }
 
 .timeline-item.past[b-5vobpl2lo2] {
@@ -245,7 +249,7 @@
 }
 
 .timeline-badge[b-5vobpl2lo2] {
-    background: #667eea;
+    background: #0071e3;
     color: white;
     padding: 0.25rem 0.75rem;
     border-radius: 12px;
@@ -336,14 +340,14 @@
     display: block;
     text-align: center;
     margin-top: 1rem;
-    color: #667eea;
+    color: #0071e3;
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9rem;
 }
 
 .view-all-link:hover[b-5vobpl2lo2] {
-    color: #764ba2;
+    color: #0077ed;
 }
 
 .no-data[b-5vobpl2lo2] {
@@ -398,7 +402,7 @@
     color: #2c3e50;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #667eea;
+    border-bottom: 2px solid #0071e3;
 }
 
 .students-table-wrapper[b-5vobpl2lo2] {
@@ -415,7 +419,7 @@
 }
 
 .students-table thead[b-5vobpl2lo2] {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
     color: white;
 }
 

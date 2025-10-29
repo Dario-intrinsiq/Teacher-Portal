@@ -59,13 +59,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
     color: white;
 }
 
 .form-header h3[b-2uit8r5slp] {
     margin: 0;
     font-size: 1.5rem;
+    color: white;
 }
 
 .form-header .btn-link[b-2uit8r5slp] {
@@ -103,8 +104,8 @@
 }
 
 .form-control:focus[b-2uit8r5slp], .form-select:focus[b-2uit8r5slp] {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    border-color: #0071e3;
+    box-shadow: 0 0 0 0.2rem rgba(0, 113, 227, 0.25);
 }
 
 textarea.form-control[b-2uit8r5slp] {
@@ -164,7 +165,7 @@ textarea.form-control[b-2uit8r5slp] {
 }
 
 .class-badge[b-2uit8r5slp] {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
     color: white;
     padding: 0.25rem 0.75rem;
     border-radius: 20px;

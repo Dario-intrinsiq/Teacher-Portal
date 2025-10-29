@@ -1,18 +1,19 @@
 .test-scores-container[b-iwe4wkoj0g] {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2.5rem 2rem;
 }
 
 .header-section[b-iwe4wkoj0g] {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .page-title[b-iwe4wkoj0g] {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #2c3e50;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1d1d1f;
     margin: 0;
+    letter-spacing: -0.04em;
 }
 
 .session-selector-card[b-iwe4wkoj0g] {
@@ -40,7 +41,7 @@
 }
 
 .session-selection-item[b-iwe4wkoj0g] {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
     color: white;
     padding: 1.5rem;
     border-radius: 12px;
@@ -86,7 +87,7 @@
 }
 
 .session-info-card[b-iwe4wkoj0g] {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
     color: white;
     padding: 1.5rem;
     border-radius: 12px;
@@ -101,6 +102,7 @@
 .session-info-content h3[b-iwe4wkoj0g] {
     margin: 0 0 0.75rem 0;
     font-size: 1.5rem;
+    color: white;
 }
 
 .session-details-inline[b-iwe4wkoj0g] {
@@ -159,12 +161,13 @@
 }
 
 .component-badge[b-iwe4wkoj0g] {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
     color: white;
     padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
     font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
 .text-muted[b-iwe4wkoj0g] {
@@ -189,9 +192,10 @@
 
 .scores-table-section[b-iwe4wkoj0g] {
     background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 0.5px solid rgba(0, 0, 0, 0.04);
+    padding: 2rem;
     margin-bottom: 2rem;
 }
 
@@ -262,7 +266,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
     color: white;
     display: flex;
     align-items: center;
@@ -311,8 +315,8 @@
 }
 
 .score-input:focus[b-iwe4wkoj0g] {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    border-color: #0071e3;
+    box-shadow: 0 0 0 0.2rem rgba(0, 113, 227, 0.25);
     outline: none;
 }
 

@@ -1,23 +1,24 @@
 .attendance-container[b-ad74ew7wb4] {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2.5rem 2rem;
 }
 
 .header-section[b-ad74ew7wb4] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .page-title[b-ad74ew7wb4] {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #2c3e50;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1d1d1f;
     margin: 0;
+    letter-spacing: -0.04em;
 }
 
 .date-selector[b-ad74ew7wb4] {
@@ -100,8 +101,9 @@
 
 .attendance-table[b-ad74ew7wb4] {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 0.5px solid rgba(0, 0, 0, 0.04);
     overflow: hidden;
 }
 
@@ -197,12 +199,12 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 0.9rem;
 }
 
@@ -211,8 +213,8 @@
 }
 
 .clickable-avatar:hover[b-ad74ew7wb4] {
-    transform: scale(1.1);
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
 }
 
 .student-email[b-ad74ew7wb4] {
@@ -234,8 +236,8 @@
 
 .status-dropdown:focus[b-ad74ew7wb4] {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    border-color: #0071e3;
+    box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
 }
 
 .status-dropdown.status-select[b-ad74ew7wb4] {
@@ -325,7 +327,7 @@
 }
 
 .session-selection-item[b-ad74ew7wb4] {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
     color: white;
     padding: 1.5rem;
     border-radius: 12px;
@@ -373,7 +375,7 @@
 }
 
 .session-info-card[b-ad74ew7wb4] {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
     color: white;
     padding: 1.5rem;
     border-radius: 12px;
@@ -388,6 +390,7 @@
 .session-info-content h3[b-ad74ew7wb4] {
     margin: 0 0 0.75rem 0;
     font-size: 1.5rem;
+    color: white;
 }
 
 .session-details-inline[b-ad74ew7wb4] {

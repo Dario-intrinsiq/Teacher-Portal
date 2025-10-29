@@ -79,7 +79,7 @@
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/ref/TeacherPortal.dll
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/TeacherPortal.sourcelink.json
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/scopedcss/Components/Pages/TestScores.razor.rz.scp.css
-/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/9dfohwyg5l-lp9jid20rl.gz
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/scopedcss/Components/StudentDetailsModal.razor.rz.scp.css
-/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/441y9oi5bd-k3nozxbppg.gz
-/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/dwjd8c6g8y-k3nozxbppg.gz
+/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/9dfohwyg5l-wmarympdt4.gz
+/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/441y9oi5bd-b0niphb5wo.gz
+/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/dwjd8c6g8y-b0niphb5wo.gz
