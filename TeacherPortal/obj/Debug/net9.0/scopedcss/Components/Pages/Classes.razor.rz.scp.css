@@ -35,6 +35,41 @@
     max-width: 200px;
 }
 
+.week-tabs[b-3ycvadl339] {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 0.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+}
+
+.week-tab[b-3ycvadl339] {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid transparent;
+    background: transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.week-tab:hover[b-3ycvadl339] {
+    background: #f8f9fa;
+    color: #495057;
+}
+
+.week-tab.active[b-3ycvadl339] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+}
+
 .stats-summary[b-3ycvadl339] {
     display: flex;
     margin-bottom: 2rem;
@@ -119,7 +154,23 @@
 .class-subject[b-3ycvadl339] {
     color: #6c757d;
     font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.class-students[b-3ycvadl339] {
     margin-bottom: 1rem;
+}
+
+.students-count[b-3ycvadl339] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f0f4ff;
+    color: #667eea;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .class-details[b-3ycvadl339] {
@@ -159,6 +210,23 @@
     letter-spacing: 0.5px;
 }
 
+.day-group[b-3ycvadl339] {
+    margin-bottom: 1.5rem;
+}
+
+.day-group:last-child[b-3ycvadl339] {
+    margin-bottom: 0;
+}
+
+.day-group-header[b-3ycvadl339] {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
 .session-item[b-3ycvadl339] {
     background: #f8f9fa;
     padding: 1rem;
@@ -188,9 +256,14 @@
 }
 
 .session-time[b-3ycvadl339],
-.session-days[b-3ycvadl339] {
+.session-days[b-3ycvadl339],
+.session-date[b-3ycvadl339] {
     font-size: 0.85rem;
     color: #6c757d;
+}
+
+.session-date[b-3ycvadl339] {
+    font-weight: 500;
 }
 
 .session-item .btn[b-3ycvadl339] {
@@ -198,6 +271,11 @@
     padding: 0.5rem 1rem;
     font-weight: 600;
     border-radius: 6px;
+}
+
+.session-item .btn:disabled[b-3ycvadl339] {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .stat-sessions[b-3ycvadl339] {

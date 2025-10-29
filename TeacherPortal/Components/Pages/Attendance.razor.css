@@ -140,6 +140,59 @@
     font-weight: 600;
 }
 
+.student-name-with-flags {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.student-flags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.flag-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.flag-new {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.flag-last-week {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.flag-birthday {
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8e53 100%);
+    color: white;
+    border: 1px solid #ff6b9d;
+    animation: pulse-birthday 2s ease-in-out infinite;
+}
+
+@keyframes pulse-birthday {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 107, 157, 0.7);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 8px rgba(255, 107, 157, 0);
+    }
+}
+
 .student-avatar {
     width: 40px;
     height: 40px;
@@ -153,76 +206,73 @@
     font-size: 0.9rem;
 }
 
+.clickable-avatar {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.clickable-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
 .student-email {
     color: #6c757d;
     font-size: 0.9rem;
 }
 
-.status-buttons {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.status-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+.status-dropdown {
+    min-width: 150px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
     border: 2px solid #dee2e6;
     background: white;
+    font-size: 0.95rem;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.status-btn:hover {
-    transform: scale(1.1);
+.status-dropdown:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
 }
 
-.status-btn.status-present {
+.status-dropdown.status-select {
+    color: #6c757d;
+}
+
+.status-dropdown.status-present {
     color: #28a745;
-}
-
-.status-btn.status-present:hover,
-.status-btn.status-present.active {
-    background: #28a745;
     border-color: #28a745;
-    color: white;
+    background-color: rgba(40, 167, 69, 0.05);
 }
 
-.status-btn.status-absent {
+.status-dropdown.status-present:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.status-dropdown.status-absent {
     color: #dc3545;
-}
-
-.status-btn.status-absent:hover,
-.status-btn.status-absent.active {
-    background: #dc3545;
     border-color: #dc3545;
-    color: white;
+    background-color: rgba(220, 53, 69, 0.05);
 }
 
-.status-btn.status-late {
+.status-dropdown.status-absent:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.status-dropdown.status-late {
     color: #ffc107;
-}
-
-.status-btn.status-late:hover,
-.status-btn.status-late.active {
-    background: #ffc107;
     border-color: #ffc107;
-    color: white;
+    background-color: rgba(255, 193, 7, 0.05);
 }
 
-.status-btn.status-excused {
-    color: #17a2b8;
-}
-
-.status-btn.status-excused:hover,
-.status-btn.status-excused.active {
-    background: #17a2b8;
-    border-color: #17a2b8;
-    color: white;
+.status-dropdown.status-late:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
 }
 
 .notes-input {
@@ -244,6 +294,10 @@
 
 .status-excused-row {
     background-color: rgba(23, 162, 184, 0.05);
+}
+
+.student-row.under-18 {
+    border-left: 4px solid #ffc107 !important;
 }
 
 .session-selector-card {

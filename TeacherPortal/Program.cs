@@ -11,6 +11,8 @@ builder.Services.AddRazorComponents()
 builder.Services.AddSingleton<AttendanceService>();
 builder.Services.AddSingleton<ClassService>();
 builder.Services.AddSingleton<SchemeOfWorkService>();
+builder.Services.AddSingleton<TestService>();
+builder.Services.AddSingleton<TestScoreService>();
 
 var app = builder.Build();
 

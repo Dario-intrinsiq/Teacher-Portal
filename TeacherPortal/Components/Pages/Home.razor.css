@@ -379,3 +379,134 @@
         flex-direction: column;
     }
 }
+
+.students-table-card {
+    grid-column: 1 / -1;
+}
+
+.class-group {
+    margin-bottom: 3rem;
+}
+
+.class-group:last-child {
+    margin-bottom: 0;
+}
+
+.class-group-header {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #667eea;
+}
+
+.students-table-wrapper {
+    overflow-x: auto;
+}
+
+.students-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.students-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.students-table thead th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.students-table tbody tr {
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s;
+}
+
+.students-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.students-table tbody tr.under-18 {
+    border-left: 4px solid #ffc107 !important;
+}
+
+.students-table tbody td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+.attendance-badge,
+.test-result-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+.attendance-excellent,
+.test-excellent {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.attendance-good,
+.test-good {
+    background-color: rgba(23, 162, 184, 0.1);
+    color: #17a2b8;
+}
+
+.attendance-fair,
+.test-fair {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.attendance-poor,
+.test-poor {
+    background-color: rgba(253, 126, 20, 0.1);
+    color: #fd7e14;
+}
+
+.attendance-very-poor,
+.test-fail {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.test-result-badge.no-test {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+@media (max-width: 1200px) {
+    .students-table {
+        font-size: 0.85rem;
+    }
+    
+    .students-table thead th,
+    .students-table tbody td {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .attendance-badge,
+    .test-result-badge {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.85rem;
+        min-width: 50px;
+    }
+}

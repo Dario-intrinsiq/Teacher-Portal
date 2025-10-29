@@ -90,7 +90,6 @@
                 <thead>
                     <tr>
                         <th>Student Name</th>
-                        <th>Email</th>
                         <th>Status</th>
                         <th>Notes</th>
                     </tr>
@@ -98,35 +97,36 @@
                 <tbody>
                     @foreach (var record in attendanceRecords)
                     {
-                        <tr class="student-row @GetStatusClass(record.Status)">
+                        <tr class="student-row @GetStatusClass(record.Status) @(record.Student?.IsUnder18 == true ? "under-18" : "")">
                             <td class="student-name">
-                                <div class="student-avatar">@GetInitials(record.Student?.FullName ?? "")</div>
-                                <span>@record.Student?.FullName</span>
-                            </td>
-                            <td class="student-email">@record.Student?.Email</td>
-                            <td class="status-cell">
-                                <div class="status-buttons">
-                                    <button class="status-btn status-present @(record.Status == AttendanceStatus.Present ? "active" : "")" 
-                                            @onclick="() => UpdateStatus(record.StudentId, AttendanceStatus.Present)"
-                                            title="Present">
-                                        ✓
-                                    </button>
-                                    <button class="status-btn status-absent @(record.Status == AttendanceStatus.Absent ? "active" : "")" 
-                                            @onclick="() => UpdateStatus(record.StudentId, AttendanceStatus.Absent)"
-                                            title="Absent">
-                                        ✗
-                                    </button>
-                                    <button class="status-btn status-late @(record.Status == AttendanceStatus.Late ? "active" : "")" 
-                                            @onclick="() => UpdateStatus(record.StudentId, AttendanceStatus.Late)"
-                                            title="Late">
-                                        ⏱
-                                    </button>
-                                    <button class="status-btn status-excused @(record.Status == AttendanceStatus.Excused ? "active" : "")" 
-                                            @onclick="() => UpdateStatus(record.StudentId, AttendanceStatus.Excused)"
-                                            title="Excused">
-                                        E
-                                    </button>
+                                <div class="student-avatar clickable-avatar" @onclick="() => ShowStudentDetails(record.Student)" style="cursor: pointer;" title="Click to view student details">@GetInitials(record.Student?.FullName ?? "")</div>
+                                <div class="student-name-with-flags">
+                                    <span>@record.Student?.FullName</span>
+                                    <div class="student-flags">
+                                        @if (IsNewStudent(record.Student))
+                                        {
+                                            <span class="flag-badge flag-new">🆕 New Student</span>
+                                        }
+                                        @if (IsInLastWeek(record.Student))
+                                        {
+                                            <span class="flag-badge flag-last-week">👋 Last Week</span>
+                                        }
+                                        @if (IsBirthdayToday(record.Student))
+                                        {
+                                            <span class="flag-badge flag-birthday">🎂 Birthday Today!</span>
+                                        }
+                                    </div>
                                 </div>
+                            </td>
+                            <td class="status-cell">
+                                <select class="form-select status-dropdown @GetStatusDropdownClass(record.Status)" 
+                                        value="@GetStatusValue(record.Status)"
+                                        @onchange="@((ChangeEventArgs e) => OnStatusChange(record.StudentId, e.Value?.ToString()))">
+                                    <option value="">SELECT</option>
+                                    <option value="Present">Present</option>
+                                    <option value="Absent">Absent</option>
+                                    <option value="Late">Late</option>
+                                </select>
                             </td>
                             <td class="notes-cell">
                                 <input type="text" 
@@ -150,6 +150,10 @@
     }
 </div>
 
+<StudentDetailsModal Student="@selectedStudentForDetails" 
+                     SessionId="@selectedSessionId" 
+                     OnClose="@(() => selectedStudentForDetails = null)" />
+
 @code {
     private DateTime selectedDate = DateTime.Today;
     private List<AttendanceRecord> attendanceRecords = new();
@@ -157,6 +161,7 @@
     private Session? selectedSession = null;
     private Class? selectedClass = null;
     private List<Class> allClasses = new();
+    private Student? selectedStudentForDetails = null;
 
     protected override void OnInitialized()
     {
@@ -231,6 +236,39 @@
         }
     }
 
+    private string GetStatusValue(AttendanceStatus status)
+    {
+        if (status == AttendanceStatus.NotMarked)
+            return "";
+        
+        return status.ToString();
+    }
+
+    private string GetStatusDropdownClass(AttendanceStatus status)
+    {
+        return status switch
+        {
+            AttendanceStatus.Present => "status-present",
+            AttendanceStatus.Absent => "status-absent",
+            AttendanceStatus.Late => "status-late",
+            _ => "status-select"
+        };
+    }
+
+    private void OnStatusChange(int studentId, string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            UpdateStatus(studentId, AttendanceStatus.NotMarked);
+            return;
+        }
+
+        if (Enum.TryParse<AttendanceStatus>(value, out var status))
+        {
+            UpdateStatus(studentId, status);
+        }
+    }
+
     private string GetStatusClass(AttendanceStatus status)
     {
         return status switch
@@ -241,6 +279,41 @@
             AttendanceStatus.Excused => "status-excused-row",
             _ => ""
         };
+    }
+
+    private void ShowStudentDetails(Student? student)
+    {
+        selectedStudentForDetails = student;
+    }
+
+    private bool IsNewStudent(Student? student)
+    {
+        if (student == null) return false;
+        
+        // Student is new if they started the course within the last 7 days
+        var daysSinceStart = (DateTime.Today - student.CourseStart.Date).TotalDays;
+        return daysSinceStart >= 0 && daysSinceStart <= 7;
+    }
+
+    private bool IsInLastWeek(Student? student)
+    {
+        if (student == null || !student.CourseEnd.HasValue) return false;
+        
+        var courseEndDate = student.CourseEnd.Value.Date;
+        var today = DateTime.Today;
+        
+        // Student is in last week if CourseEnd is within the next 7 days or has passed
+        var daysUntilEnd = (courseEndDate - today).TotalDays;
+        return daysUntilEnd <= 7 && daysUntilEnd >= -7;
+    }
+
+    private bool IsBirthdayToday(Student? student)
+    {
+        if (student == null) return false;
+        
+        var today = DateTime.Today;
+        return student.DateOfBirth.Month == today.Month && 
+               student.DateOfBirth.Day == today.Day;
     }
 
     private string GetInitials(string fullName)

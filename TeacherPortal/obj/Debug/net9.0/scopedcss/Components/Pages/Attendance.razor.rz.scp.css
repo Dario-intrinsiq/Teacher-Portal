@@ -140,6 +140,59 @@
     font-weight: 600;
 }
 
+.student-name-with-flags[b-ad74ew7wb4] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.student-flags[b-ad74ew7wb4] {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.flag-badge[b-ad74ew7wb4] {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.flag-new[b-ad74ew7wb4] {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.flag-last-week[b-ad74ew7wb4] {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.flag-birthday[b-ad74ew7wb4] {
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8e53 100%);
+    color: white;
+    border: 1px solid #ff6b9d;
+    animation: pulse-birthday-b-ad74ew7wb4 2s ease-in-out infinite;
+}
+
+@keyframes pulse-birthday-b-ad74ew7wb4 {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 107, 157, 0.7);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 8px rgba(255, 107, 157, 0);
+    }
+}
+
 .student-avatar[b-ad74ew7wb4] {
     width: 40px;
     height: 40px;
@@ -153,76 +206,73 @@
     font-size: 0.9rem;
 }
 
+.clickable-avatar[b-ad74ew7wb4] {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.clickable-avatar:hover[b-ad74ew7wb4] {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
 .student-email[b-ad74ew7wb4] {
     color: #6c757d;
     font-size: 0.9rem;
 }
 
-.status-buttons[b-ad74ew7wb4] {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.status-btn[b-ad74ew7wb4] {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+.status-dropdown[b-ad74ew7wb4] {
+    min-width: 150px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
     border: 2px solid #dee2e6;
     background: white;
+    font-size: 0.95rem;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.status-btn:hover[b-ad74ew7wb4] {
-    transform: scale(1.1);
+.status-dropdown:focus[b-ad74ew7wb4] {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
 }
 
-.status-btn.status-present[b-ad74ew7wb4] {
+.status-dropdown.status-select[b-ad74ew7wb4] {
+    color: #6c757d;
+}
+
+.status-dropdown.status-present[b-ad74ew7wb4] {
     color: #28a745;
-}
-
-.status-btn.status-present:hover[b-ad74ew7wb4],
-.status-btn.status-present.active[b-ad74ew7wb4] {
-    background: #28a745;
     border-color: #28a745;
-    color: white;
+    background-color: rgba(40, 167, 69, 0.05);
 }
 
-.status-btn.status-absent[b-ad74ew7wb4] {
+.status-dropdown.status-present:focus[b-ad74ew7wb4] {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.status-dropdown.status-absent[b-ad74ew7wb4] {
     color: #dc3545;
-}
-
-.status-btn.status-absent:hover[b-ad74ew7wb4],
-.status-btn.status-absent.active[b-ad74ew7wb4] {
-    background: #dc3545;
     border-color: #dc3545;
-    color: white;
+    background-color: rgba(220, 53, 69, 0.05);
 }
 
-.status-btn.status-late[b-ad74ew7wb4] {
+.status-dropdown.status-absent:focus[b-ad74ew7wb4] {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.status-dropdown.status-late[b-ad74ew7wb4] {
     color: #ffc107;
-}
-
-.status-btn.status-late:hover[b-ad74ew7wb4],
-.status-btn.status-late.active[b-ad74ew7wb4] {
-    background: #ffc107;
     border-color: #ffc107;
-    color: white;
+    background-color: rgba(255, 193, 7, 0.05);
 }
 
-.status-btn.status-excused[b-ad74ew7wb4] {
-    color: #17a2b8;
-}
-
-.status-btn.status-excused:hover[b-ad74ew7wb4],
-.status-btn.status-excused.active[b-ad74ew7wb4] {
-    background: #17a2b8;
-    border-color: #17a2b8;
-    color: white;
+.status-dropdown.status-late:focus[b-ad74ew7wb4] {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
 }
 
 .notes-input[b-ad74ew7wb4] {
@@ -244,6 +294,10 @@
 
 .status-excused-row[b-ad74ew7wb4] {
     background-color: rgba(23, 162, 184, 0.05);
+}
+
+.student-row.under-18[b-ad74ew7wb4] {
+    border-left: 4px solid #ffc107 !important;
 }
 
 .session-selector-card[b-ad74ew7wb4] {

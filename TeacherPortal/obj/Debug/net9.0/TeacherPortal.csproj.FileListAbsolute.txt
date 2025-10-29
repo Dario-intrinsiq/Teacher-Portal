@@ -24,7 +24,6 @@
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/scopedcss/Components/Pages/SchemeManagement.razor.rz.scp.css
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/scopedcss/bundle/TeacherPortal.styles.css
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/scopedcss/projectbundle/TeacherPortal.bundle.scp.css
-/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/9dfohwyg5l-g1og635ybs.gz
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/ty79i343z3-bqjiyaj88i.gz
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/07s1vig47z-c2jlpeoesf.gz
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/3q4sk9tyuv-erw9l3u2r3.gz
@@ -78,5 +77,9 @@
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/TeacherPortal.pdb
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/TeacherPortal.genruntimeconfig.cache
 /Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/ref/TeacherPortal.dll
-/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/441y9oi5bd-dajbjqk8pi.gz
-/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/dwjd8c6g8y-dajbjqk8pi.gz
+/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/TeacherPortal.sourcelink.json
+/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/scopedcss/Components/Pages/TestScores.razor.rz.scp.css
+/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/9dfohwyg5l-lp9jid20rl.gz
+/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/scopedcss/Components/StudentDetailsModal.razor.rz.scp.css
+/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/441y9oi5bd-k3nozxbppg.gz
+/Users/dariozignale/Teacher Portal/TeacherPortal/obj/Debug/net9.0/compressed/dwjd8c6g8y-k3nozxbppg.gz

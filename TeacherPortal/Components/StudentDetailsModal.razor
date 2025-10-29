@@ -1,0 +1,96 @@
+@using TeacherPortal.Models
+@using TeacherPortal.Services
+@inject AttendanceService AttendanceService
+
+@if (Student != null)
+{
+    <div class="modal-overlay @(IsVisible ? "visible" : "")" @onclick="CloseModal">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h2>👤 Student Details</h2>
+                <button class="close-button" @onclick="CloseModal">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="student-detail-section">
+                    <div class="detail-row">
+                        <span class="detail-label">Full Name:</span>
+                        <span class="detail-value">@Student.FullName</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="detail-label">Date of Birth:</span>
+                        <span class="detail-value">@Student.DateOfBirth.ToString("MMMM dd, yyyy")</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="detail-label">Age:</span>
+                        <span class="detail-value">@Student.Age years old</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="detail-label">Gender:</span>
+                        <span class="detail-value">@Student.Gender.ToString()</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="detail-label">Course Start:</span>
+                        <span class="detail-value">@Student.CourseStart.ToString("MMMM dd, yyyy")</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="detail-label">Course End:</span>
+                        <span class="detail-value">@(Student.CourseEnd?.ToString("MMMM dd, yyyy") ?? "Ongoing")</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="detail-label">Attendance Percentage:</span>
+                        <span class="detail-value attendance-percentage @GetAttendanceClass(AttendancePercentage)">
+                            @AttendancePercentage.ToString("F2")%
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="CloseModal">Close</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Student? Student { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public int? SessionId { get; set; }
+
+    private bool IsVisible => Student != null;
+    private decimal AttendancePercentage { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Student != null)
+        {
+            AttendancePercentage = AttendanceService.GetAttendancePercentage(Student.Id, SessionId);
+        }
+    }
+
+    private async Task CloseModal()
+    {
+        Student = null;
+        await OnClose.InvokeAsync();
+    }
+
+    private string GetAttendanceClass(decimal percentage)
+    {
+        return percentage switch
+        {
+            >= 90 => "attendance-excellent",
+            >= 75 => "attendance-good",
+            >= 60 => "attendance-fair",
+            >= 40 => "attendance-poor",
+            _ => "attendance-very-poor"
+        };
+    }
+}
+

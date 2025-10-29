@@ -3,6 +3,7 @@
 @using TeacherPortal.Models
 @using TeacherPortal.Services
 @inject ClassService ClassService
+@inject AttendanceService AttendanceService
 
 <PageTitle>My Classes</PageTitle>
 
@@ -39,6 +40,15 @@
         </div>
     </div>
 
+    <div class="week-tabs">
+        <button class="week-tab @(selectedWeek == "this" ? "active" : "")" @onclick='() => SelectWeek("this")'>
+            📅 This Week
+        </button>
+        <button class="week-tab @(selectedWeek == "next" ? "active" : "")" @onclick='() => SelectWeek("next")'>
+            📆 Next Week
+        </button>
+    </div>
+
     <div class="classes-grid">
         @foreach (var cls in displayedClasses)
         {
@@ -48,18 +58,37 @@
                     <span class="room-badge">@cls.RoomNumber</span>
                 </div>
                 <div class="class-subject">@cls.Subject</div>
+                <div class="class-students">
+                    <span class="students-count">👥 @GetTotalStudents() Students</span>
+                </div>
                 
                 <div class="sessions-list">
                     <h4 class="sessions-title">Sessions:</h4>
-                    @foreach (var session in cls.Sessions)
+                    @foreach (var dayGroup in GetSessionsGroupedByDay(cls))
                     {
-                        <div class="session-item">
-                            <div class="session-info">
-                                <span class="session-name">@session.SessionName</span>
-                                <span class="session-time">🕒 @session.TimeSlot</span>
-                                <span class="session-days">📅 @session.DaysDisplay</span>
-                            </div>
-                            <a href="/attendance?sessionId=@session.Id" class="btn btn-primary btn-sm">Take Attendance</a>
+                        <div class="day-group">
+                            <h5 class="day-group-header">@dayGroup.DayName</h5>
+                            @foreach (var sessionItem in dayGroup.Sessions)
+                            {
+                                var isNextWeek = selectedWeek == "next";
+                                <div class="session-item">
+                                    <div class="session-info">
+                                        <span class="session-name">@sessionItem.Session.SessionName</span>
+                                        <span class="session-time">🕒 @sessionItem.Session.TimeSlot</span>
+                                        <span class="session-date">📅 @sessionItem.Date.ToString("MMM dd")</span>
+                                    </div>
+                                    @if (isNextWeek)
+                                    {
+                                        <button class="btn btn-secondary btn-sm" disabled title="Attendance cannot be taken for future classes">
+                                            Take Attendance
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <a href="/attendance?sessionId=@sessionItem.Session.Id&date=@sessionItem.Date.ToString("yyyy-MM-dd")" class="btn btn-primary btn-sm">Take Attendance</a>
+                                    }
+                                </div>
+                            }
                         </div>
                     }
                 </div>
@@ -81,32 +110,159 @@
     private List<Class> allClasses = new();
     private List<Class> displayedClasses = new();
     private string selectedDay = string.Empty;
+    private string selectedWeek = "this";
 
     protected override void OnInitialized()
     {
         LoadClasses();
     }
 
+    private int GetTotalStudents()
+    {
+        return AttendanceService.GetAllStudents().Count;
+    }
+
     private void LoadClasses()
     {
         allClasses = ClassService.GetAllClasses();
-        displayedClasses = allClasses;
+        FilterClasses();
+    }
+
+    private void SelectWeek(string week)
+    {
+        selectedWeek = week;
+        FilterClasses();
+    }
+
+    private List<DateTime> GetSessionDatesForWeek(Session session)
+    {
+        var today = DateTime.Today;
+        var startOfThisWeek = today.AddDays(-(int)today.DayOfWeek); // Sunday
+        var startOfNextWeek = startOfThisWeek.AddDays(7);
+        var endOfWeek = selectedWeek == "this" ? startOfNextWeek.AddDays(-1) : startOfNextWeek.AddDays(6);
+        var weekStart = selectedWeek == "this" ? startOfThisWeek : startOfNextWeek;
+
+        var dates = new List<DateTime>();
+        for (var date = weekStart; date <= endOfWeek; date = date.AddDays(1))
+        {
+            if (session.DaysOfWeek.Contains(date.DayOfWeek))
+            {
+                dates.Add(date);
+            }
+        }
+        return dates.OrderBy(d => d).ToList();
     }
 
     private void FilterClasses()
     {
-        if (string.IsNullOrEmpty(selectedDay))
-        {
-            displayedClasses = allClasses;
-        }
-        else
+        var filtered = allClasses.ToList();
+        
+        // Filter by day if selected
+        if (!string.IsNullOrEmpty(selectedDay))
         {
             if (Enum.TryParse<DayOfWeek>(selectedDay, out var day))
             {
-                displayedClasses = allClasses
+                filtered = filtered
                     .Where(c => c.Sessions.Any(s => s.DaysOfWeek.Contains(day)))
                     .ToList();
             }
         }
+
+        // Filter to only show classes that have sessions in the selected week
+        var weekStart = selectedWeek == "this" 
+            ? DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek)
+            : DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek).AddDays(7);
+        var weekEnd = weekStart.AddDays(6);
+
+        displayedClasses = filtered
+            .Select(cls => new Class
+            {
+                Id = cls.Id,
+                ClassName = cls.ClassName,
+                RoomNumber = cls.RoomNumber,
+                Subject = cls.Subject,
+                Sessions = cls.Sessions
+                    .Where(s => s.DaysOfWeek.Any(d => 
+                    {
+                        // Check if any day in the session falls within the selected week
+                        for (var date = weekStart; date <= weekEnd; date = date.AddDays(1))
+                        {
+                            if (s.DaysOfWeek.Contains(date.DayOfWeek))
+                                return true;
+                        }
+                        return false;
+                    }))
+                    .ToList()
+            })
+            .Where(cls => cls.Sessions.Any())
+            .ToList();
+    }
+
+    private List<DaySessionGroup> GetSessionsGroupedByDay(Class cls)
+    {
+        var dayOrder = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday };
+        var groups = new List<DaySessionGroup>();
+
+        foreach (var day in dayOrder)
+        {
+            var daySessions = new List<SessionDateItem>();
+            
+            // Get all sessions that occur on this day
+            foreach (var session in cls.Sessions.OrderBy(s => ExtractStartTime(s.TimeSlot)).ThenBy(s => s.SessionName))
+            {
+                if (session.DaysOfWeek.Contains(day))
+                {
+                    var sessionDates = GetSessionDatesForWeek(session);
+                    var dateForThisDay = sessionDates.FirstOrDefault(d => d.DayOfWeek == day);
+                    
+                    if (dateForThisDay != default(DateTime))
+                    {
+                        daySessions.Add(new SessionDateItem
+                        {
+                            Session = session,
+                            Date = dateForThisDay
+                        });
+                    }
+                }
+            }
+            
+            if (daySessions.Any())
+            {
+                groups.Add(new DaySessionGroup
+                {
+                    DayName = day.ToString(),
+                    DayOfWeek = day,
+                    Sessions = daySessions
+                });
+            }
+        }
+
+        return groups;
+    }
+
+    private class DaySessionGroup
+    {
+        public string DayName { get; set; } = string.Empty;
+        public DayOfWeek DayOfWeek { get; set; }
+        public List<SessionDateItem> Sessions { get; set; } = new();
+    }
+
+    private TimeSpan ExtractStartTime(string timeSlot)
+    {
+        if (string.IsNullOrEmpty(timeSlot))
+            return TimeSpan.Zero;
+
+        var parts = timeSlot.Split('-');
+        if (parts.Length > 0 && TimeSpan.TryParse(parts[0].Trim(), out var startTime))
+        {
+            return startTime;
+        }
+        return TimeSpan.Zero;
+    }
+
+    private class SessionDateItem
+    {
+        public Session Session { get; set; } = null!;
+        public DateTime Date { get; set; }
     }
 }

@@ -1,0 +1,496 @@
+@page "/test-scores"
+@rendermode InteractiveServer
+@using TeacherPortal.Models
+@using TeacherPortal.Services
+@inject TestScoreService TestScoreService
+@inject ClassService ClassService
+@inject AttendanceService AttendanceService
+@inject TestService TestService
+
+<PageTitle>Enter Test Scores</PageTitle>
+
+<div class="test-scores-container">
+    <div class="header-section">
+        <h1 class="page-title">📝 Enter Test Scores</h1>
+    </div>
+
+    <div class="session-selector-card">
+        <h3>Select a Class Session</h3>
+        <p>Choose the class session to enter test scores for:</p>
+        
+        <div class="sessions-selection-grid">
+            @foreach (var cls in allClasses)
+            {
+                @foreach (var session in cls.Sessions)
+                {
+                    <div class="session-selection-item" @onclick="() => SelectSession(session.Id)">
+                        <div class="session-sel-header">
+                            <span class="session-sel-class">@cls.ClassName</span>
+                            <span class="session-sel-room">@cls.RoomNumber</span>
+                        </div>
+                        <div class="session-sel-name">@session.SessionName</div>
+                        <div class="session-sel-time">🕒 @session.TimeSlot</div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    @if (selectedSession != null && selectedClass != null)
+    {
+        <div class="session-info-card">
+            <div class="session-info-content">
+                <h3>@selectedClass.ClassName - @selectedSession.SessionName</h3>
+                <div class="session-details-inline">
+                    <span>🏫 @selectedClass.RoomNumber</span>
+                    <span>🕒 @selectedSession.TimeSlot</span>
+                    <span>👥 @students.Count Students</span>
+                </div>
+            </div>
+            <button class="btn btn-secondary" @onclick="ClearSession">Change Session</button>
+        </div>
+
+        <div class="test-form-section">
+            <div class="test-form-header">
+                <h3>Test Information</h3>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Test Name <span class="required">*</span></label>
+                    <select class="form-select" @bind="selectedTestId" @bind:after="OnTestSelected">
+                        <option value="0">-- Select a Test --</option>
+                        @foreach (var test in allTests)
+                        {
+                            <option value="@test.Id">@test.TestName - @test.Description</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Test Date <span class="required">*</span></label>
+                    <input type="date" class="form-control" @bind="testDate" />
+                </div>
+                @if (selectedTest != null)
+                {
+                    <div class="form-group">
+                        <label>Max Score</label>
+                        <input type="number" class="form-control" @bind="selectedTest.MaxScore" @bind:event="oninput" step="0.01" min="0" disabled />
+                        <small class="text-muted">Max score for this test</small>
+                    </div>
+                }
+            </div>
+            @if (selectedTest != null && selectedTest.HasMultipleComponents)
+            {
+                <div class="components-info">
+                    <h4>Score Components:</h4>
+                    <div class="components-list">
+                        @foreach (var component in selectedTest.ScoreComponents)
+                        {
+                            <span class="component-badge">@component</span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (selectedTest != null)
+        {
+            <div class="scores-table-section">
+                <div class="scores-table-header">
+                    <h3>Enter Scores for Students</h3>
+                    <div class="quick-actions">
+                        <button class="btn btn-success btn-sm" @onclick="FillAllWithZero">Fill All with 0</button>
+                        <button class="btn btn-secondary btn-sm" @onclick="ClearAllScores">Clear All</button>
+                    </div>
+                </div>
+
+                <div class="scores-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                @if (selectedTest.HasMultipleComponents)
+                                {
+                                    @foreach (var component in selectedTest.ScoreComponents)
+                                    {
+                                        <th>@component</th>
+                                    }
+                                }
+                                else
+                                {
+                                    <th>Score</th>
+                                }
+                                <th>Total</th>
+                                <th>Percentage</th>
+                                <th>Grade</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var student in students)
+                            {
+                                var scoreEntry = GetOrCreateScoreEntry(student.Id);
+                                <tr class="student-score-row @(student.IsUnder18 ? "under-18" : "")">
+                                    <td class="student-name">
+                                        <div class="student-avatar clickable-avatar" @onclick="() => ShowStudentDetails(student)" style="cursor: pointer;" title="Click to view student details">@GetInitials(student.FullName)</div>
+                                        <span>@student.FullName</span>
+                                    </td>
+                                    
+                                    @if (selectedTest.HasMultipleComponents)
+                                    {
+                                        @foreach (var component in selectedTest.ScoreComponents)
+                                        {
+                                            <td class="score-input-cell">
+                                                <input type="number" 
+                                                       class="form-control score-input" 
+                                                       @bind="@scoreEntry.ComponentScores[component]"
+                                                       @bind:event="oninput"
+                                                       @bind:after="StateHasChanged"
+                                                       step="0.01" 
+                                                       min="0" 
+                                                       placeholder="0.00" />
+                                            </td>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <td class="score-input-cell">
+                                            <input type="number" 
+                                                   class="form-control score-input" 
+                                                   @bind="scoreEntry.Score"
+                                                   @bind:event="oninput"
+                                                   step="0.01" 
+                                                   min="0" 
+                                                   max="@selectedTest.MaxScore"
+                                                   placeholder="0.00" />
+                                        </td>
+                                    }
+                                    
+                                    <td class="total-score-cell">
+                                        <span class="total-score-value">
+                                            @GetTotalScore(scoreEntry, selectedTest)
+                                        </span>
+                                    </td>
+                                    
+                                    <td class="percentage-cell">
+                                        <span class="percentage-value @GetPercentageClass(scoreEntry, selectedTest)">
+                                            @GetPercentage(scoreEntry, selectedTest)%
+                                        </span>
+                                    </td>
+                                    
+                                    <td class="grade-cell">
+                                        <span class="grade-badge @GetGradeClass(scoreEntry, selectedTest)">
+                                            @GetGrade(scoreEntry, selectedTest)
+                                        </span>
+                                    </td>
+                                    
+                                    <td class="notes-cell">
+                                        <input type="text" 
+                                               class="form-control notes-input" 
+                                               @bind="scoreEntry.Notes"
+                                               @bind:event="oninput"
+                                               placeholder="Optional notes..." />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-actions-bottom">
+                    <button class="btn btn-primary btn-lg" @onclick="SaveAllScores" disabled="@(!CanSave())">
+                        💾 Save All Scores
+                    </button>
+                    <button class="btn btn-secondary btn-lg" @onclick="ClearSession">Cancel</button>
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger mt-3">@errorMessage</div>
+                }
+
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="alert alert-success mt-3">@successMessage</div>
+                }
+            </div>
+        }
+    }
+</div>
+
+<StudentDetailsModal Student="@selectedStudentForDetails" 
+                     SessionId="@selectedSession?.Id" 
+                     OnClose="@(() => selectedStudentForDetails = null)" />
+
+@code {
+    private List<Class> allClasses = new();
+    private List<Student> students = new();
+    private List<Test> allTests = new();
+    private Session? selectedSession = null;
+    private Class? selectedClass = null;
+    private Test? selectedTest = null;
+    private int selectedTestId = 0;
+    
+    private DateTime testDate = DateTime.Today;
+    
+    private Dictionary<int, ScoreEntry> scoreEntries = new();
+    
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private Student? selectedStudentForDetails = null;
+
+    protected override void OnInitialized()
+    {
+        allClasses = ClassService.GetAllClasses();
+        students = AttendanceService.GetAllStudents();
+        allTests = TestService.GetAllTests();
+    }
+
+    private void SelectSession(int sessionId)
+    {
+        selectedSession = ClassService.GetSessionById(sessionId);
+        if (selectedSession != null)
+        {
+            selectedClass = ClassService.GetClassById(selectedSession.ClassId);
+            InitializeScoreEntries();
+        }
+    }
+
+    private void OnTestSelected()
+    {
+        selectedTest = TestService.GetTestById(selectedTestId);
+        InitializeScoreEntries();
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+    }
+
+    private void ClearSession()
+    {
+        selectedSession = null;
+        selectedClass = null;
+        selectedTest = null;
+        selectedTestId = 0;
+        scoreEntries.Clear();
+        testDate = DateTime.Today;
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+    }
+
+    private void InitializeScoreEntries()
+    {
+        scoreEntries.Clear();
+        if (selectedTest != null)
+        {
+            foreach (var student in students)
+            {
+                var entry = new ScoreEntry { StudentId = student.Id };
+                foreach (var component in selectedTest.ScoreComponents)
+                {
+                    entry.ComponentScores[component] = 0;
+                }
+                scoreEntries[student.Id] = entry;
+            }
+        }
+    }
+
+    private ScoreEntry GetOrCreateScoreEntry(int studentId)
+    {
+        if (!scoreEntries.ContainsKey(studentId))
+        {
+            var entry = new ScoreEntry { StudentId = studentId };
+            if (selectedTest != null)
+            {
+                foreach (var component in selectedTest.ScoreComponents)
+                {
+                    entry.ComponentScores[component] = 0;
+                }
+            }
+            scoreEntries[studentId] = entry;
+        }
+        return scoreEntries[studentId];
+    }
+
+    private void ShowStudentDetails(Student student)
+    {
+        selectedStudentForDetails = student;
+    }
+
+    private string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+            return "?";
+
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+            return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+        return parts[0][0].ToString().ToUpper();
+    }
+
+    private decimal GetTotalScore(ScoreEntry entry, Test test)
+    {
+        if (test.HasMultipleComponents)
+        {
+            return entry.ComponentScores.Values.Sum();
+        }
+        return entry.Score;
+    }
+
+    private string GetPercentage(ScoreEntry entry, Test test)
+    {
+        var total = GetTotalScore(entry, test);
+        if (test.MaxScore <= 0) return "0.00";
+        var percentage = (total / test.MaxScore) * 100;
+        return Math.Round(percentage, 2).ToString("F2");
+    }
+
+    private string GetGrade(ScoreEntry entry, Test test)
+    {
+        var total = GetTotalScore(entry, test);
+        if (test.MaxScore <= 0) return "N/A";
+        var percentage = (total / test.MaxScore) * 100;
+        
+        return percentage switch
+        {
+            >= 90 => "A",
+            >= 80 => "B",
+            >= 70 => "C",
+            >= 60 => "D",
+            _ => "F"
+        };
+    }
+
+    private string GetPercentageClass(ScoreEntry entry, Test test)
+    {
+        var total = GetTotalScore(entry, test);
+        if (test.MaxScore <= 0) return "";
+        var percentage = (total / test.MaxScore) * 100;
+        
+        return percentage switch
+        {
+            >= 90 => "percentage-excellent",
+            >= 80 => "percentage-good",
+            >= 70 => "percentage-fair",
+            >= 60 => "percentage-poor",
+            _ => "percentage-fail"
+        };
+    }
+
+    private string GetGradeClass(ScoreEntry entry, Test test)
+    {
+        var total = GetTotalScore(entry, test);
+        if (test.MaxScore <= 0) return "";
+        var percentage = (total / test.MaxScore) * 100;
+        
+        return percentage switch
+        {
+            >= 90 => "grade-a",
+            >= 80 => "grade-b",
+            >= 70 => "grade-c",
+            >= 60 => "grade-d",
+            _ => "grade-f"
+        };
+    }
+
+    private void FillAllWithZero()
+    {
+        foreach (var entry in scoreEntries.Values)
+        {
+            if (selectedTest?.HasMultipleComponents == true)
+            {
+                foreach (var component in selectedTest.ScoreComponents)
+                {
+                    entry.ComponentScores[component] = 0;
+                }
+            }
+            else
+            {
+                entry.Score = 0;
+            }
+        }
+        StateHasChanged();
+    }
+
+    private void ClearAllScores()
+    {
+        foreach (var entry in scoreEntries.Values)
+        {
+            if (selectedTest?.HasMultipleComponents == true)
+            {
+                foreach (var component in selectedTest.ScoreComponents)
+                {
+                    entry.ComponentScores[component] = 0;
+                }
+            }
+            else
+            {
+                entry.Score = 0;
+            }
+            entry.Notes = string.Empty;
+        }
+        StateHasChanged();
+    }
+
+    private bool CanSave()
+    {
+        return selectedTestId > 0 && selectedSession != null && selectedTest != null;
+    }
+
+    private void SaveAllScores()
+    {
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+
+        if (selectedTestId == 0 || selectedTest == null)
+        {
+            errorMessage = "Please select a test.";
+            return;
+        }
+
+        if (selectedSession == null)
+        {
+            errorMessage = "Please select a session.";
+            return;
+        }
+
+        try
+        {
+            foreach (var entry in scoreEntries.Values)
+            {
+                var testScore = new TestScore
+                {
+                    StudentId = entry.StudentId,
+                    SessionId = selectedSession.Id,
+                    TestId = selectedTest.Id,
+                    TestDate = testDate,
+                    MaxScore = selectedTest.MaxScore
+                };
+
+                if (selectedTest.HasMultipleComponents)
+                {
+                    testScore.ComponentScores = new Dictionary<string, decimal>(entry.ComponentScores);
+                }
+                else
+                {
+                    testScore.Score = entry.Score;
+                }
+
+                testScore.Notes = entry.Notes;
+
+                TestScoreService.AddOrUpdateTestScore(testScore);
+            }
+
+            successMessage = $"Successfully saved test scores for {scoreEntries.Count} students!";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving scores: {ex.Message}";
+        }
+    }
+
+    private class ScoreEntry
+    {
+        public int StudentId { get; set; }
+        public decimal Score { get; set; }
+        public Dictionary<string, decimal> ComponentScores { get; set; } = new Dictionary<string, decimal>();
+        public string? Notes { get; set; }
+    }
+}

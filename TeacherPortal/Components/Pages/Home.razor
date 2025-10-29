@@ -5,6 +5,7 @@
 @inject ClassService ClassService
 @inject AttendanceService AttendanceService
 @inject SchemeOfWorkService SchemeService
+@inject TestScoreService TestScoreService
 
 <PageTitle>Dashboard - Teacher Portal</PageTitle>
 
@@ -157,6 +158,87 @@
             </div>
         </div>
     </div>
+
+    <div class="dashboard-card students-table-card">
+        <div class="card-header">
+            <h3>📊 Students Overview by Class</h3>
+        </div>
+        <div class="card-body">
+            @if (studentGroups.Any())
+            {
+                @foreach (var group in studentGroups)
+                {
+                    <div class="class-group">
+                        <h4 class="class-group-header">@group.ClassName</h4>
+                        <div class="students-table-wrapper">
+                            <table class="students-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Preferred Name</th>
+                                        <th>Student ID</th>
+                                        <th>Current Attendance</th>
+                                        <th>Overall Attendance</th>
+                                        <th>Last Test Result</th>
+                                        <th>Avg Test Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var student in group.Students)
+                                    {
+                                        <tr class="student-table-row @(student.IsUnder18 ? "under-18" : "")">
+                                            <td>@student.FullName</td>
+                                            <td>@(!string.IsNullOrEmpty(student.PreferredName) ? student.PreferredName : "-")</td>
+                                            <td>@student.StudentId</td>
+                                            <td>
+                                                <span class="attendance-badge @GetAttendanceClass(currentAttendance[student.Id])">
+                                                    @currentAttendance[student.Id].ToString("F1")%
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="attendance-badge @GetAttendanceClass(overallAttendance[student.Id])">
+                                                    @overallAttendance[student.Id].ToString("F1")%
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (lastTestResults.ContainsKey(student.Id) && lastTestResults[student.Id] != null)
+                                                {
+                                                    var lastResult = lastTestResults[student.Id]!;
+                                                    <span class="test-result-badge @GetTestResultClass(lastResult.Percentage ?? 0)">
+                                                        @(lastResult.Percentage?.ToString("F1") ?? "N/A")%
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="test-result-badge no-test">No Test</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (avgTestResults.ContainsKey(student.Id) && avgTestResults[student.Id].HasValue)
+                                                {
+                                                    <span class="test-result-badge @GetTestResultClass(avgTestResults[student.Id]!.Value)">
+                                                        @avgTestResults[student.Id]!.Value.ToString("F1")%
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="test-result-badge no-test">No Test</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="no-data">No students found</p>
+            }
+        </div>
+    </div>
 </div>
 
 @code {
@@ -165,6 +247,11 @@
     private Class? nextSessionClass = null;
     private int completedSessions = 0;
     private List<SchemeOfWork> recentSchemes = new();
+    private List<StudentGroup> studentGroups = new();
+    private Dictionary<int, decimal> currentAttendance = new();
+    private Dictionary<int, decimal> overallAttendance = new();
+    private Dictionary<int, TestScore?> lastTestResults = new();
+    private Dictionary<int, decimal?> avgTestResults = new();
 
     protected override void OnInitialized()
     {
@@ -198,6 +285,70 @@
 
         // Get recent schemes
         recentSchemes = SchemeService.GetAllSchemes().Take(5).ToList();
+
+        // Load student groups by class
+        LoadStudentGroups();
+    }
+
+    private void LoadStudentGroups()
+    {
+        var allClasses = ClassService.GetAllClasses();
+        var allStudents = AttendanceService.GetAllStudents();
+        
+        studentGroups.Clear();
+        currentAttendance.Clear();
+        overallAttendance.Clear();
+        lastTestResults.Clear();
+        avgTestResults.Clear();
+
+        foreach (var cls in allClasses)
+        {
+            // Get all students (for now, all students are in all classes - in real app, you'd have enrollment)
+            var studentsInClass = allStudents.ToList();
+            
+            if (studentsInClass.Any())
+            {
+                var group = new StudentGroup
+                {
+                    ClassName = cls.ClassName,
+                    Students = studentsInClass.OrderBy(s => s.LastName).ThenBy(s => s.FirstName).ToList()
+                };
+
+                foreach (var student in studentsInClass)
+                {
+                    currentAttendance[student.Id] = AttendanceService.GetCurrentAttendancePercentage(student.Id, 30);
+                    overallAttendance[student.Id] = AttendanceService.GetAttendancePercentage(student.Id);
+                    lastTestResults[student.Id] = TestScoreService.GetLastTestResult(student.Id);
+                    avgTestResults[student.Id] = TestScoreService.GetAverageTestResult(student.Id);
+                }
+
+                studentGroups.Add(group);
+            }
+        }
+    }
+
+    private string GetAttendanceClass(decimal percentage)
+    {
+        return percentage switch
+        {
+            >= 90 => "attendance-excellent",
+            >= 75 => "attendance-good",
+            >= 60 => "attendance-fair",
+            >= 40 => "attendance-poor",
+            _ => "attendance-very-poor"
+        };
+    }
+
+    private string GetTestResultClass(decimal percentage)
+    {
+        return percentage switch
+        {
+            >= 90 => "test-excellent",
+            >= 80 => "test-good",
+            >= 70 => "test-fair",
+            >= 60 => "test-poor",
+            _ => "test-fail"
+        };
     }
 
     private bool IsSessionPast(Session session)
@@ -226,5 +377,11 @@
         {
             return $"Starting in {(int)diff.TotalHours} hours";
         }
+    }
+
+    private class StudentGroup
+    {
+        public string ClassName { get; set; } = string.Empty;
+        public List<Student> Students { get; set; } = new();
     }
 }
